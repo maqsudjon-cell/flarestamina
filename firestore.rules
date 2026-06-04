@@ -1,0 +1,36 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isTeacher() {
+      return request.auth != null &&
+             request.auth.token.email == 'Polatovmaqsudjon1@gmail.com';
+    }
+    function signedIn() { return request.auth != null; }
+
+    match /plan/{dayId} {
+      allow read: if signedIn();
+      allow write, delete: if isTeacher();
+    }
+
+    match /config/{doc} {
+      allow read: if signedIn();
+      allow write: if isTeacher();
+    }
+
+    match /users/{uid} {
+      allow read: if isTeacher() || request.auth.uid == uid;
+      allow create, update: if request.auth.uid == uid;
+
+      match /progress/{taskId} {
+        allow read: if isTeacher() || request.auth.uid == uid;
+        allow write, delete: if request.auth.uid == uid;
+      }
+    }
+
+    match /leaderboard/{uid} {
+      allow read: if signedIn();
+      allow create, update: if request.auth.uid == uid;
+      allow delete: if isTeacher() || request.auth.uid == uid;
+    }
+  }
+}

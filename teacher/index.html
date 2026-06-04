@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Teacher Dashboard — Flarestamina</title>
+  <meta name="theme-color" content="#059669" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <script>
+    (function () { try { var t = localStorage.getItem("flare-theme"); if (t) document.documentElement.setAttribute("data-theme", t); } catch (e) {} })();
+  </script>
+  <style>
+    :root {
+      --accent:#10b981; --accent-strong:#34d399; --accent-ink:#6ee7b7;
+      --bg:#0a0e0c; --surface:#111814; --surface-2:#172019; --border:#212d26;
+      --text:#e9efea; --muted:#8ba095; --faint:#5e7068;
+      --radius:16px; --maxw:1180px;
+      --shadow:0 10px 40px -16px rgba(0,0,0,.55);
+      --font:"Plus Jakarta Sans", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      --mono:"Space Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+      --green:#10b981; --amber:#f59e0b; --gray:#6b7280;
+    }
+    [data-theme="light"] {
+      --accent:#059669; --accent-strong:#047857; --accent-ink:#065f46;
+      --bg:#f4f7f5; --surface:#ffffff; --surface-2:#eef3f0; --border:#d4e0d9;
+      --text:#0c1410; --muted:#4d6157; --faint:#7d9488;
+      --shadow:0 10px 36px -18px rgba(16,40,30,.22);
+    }
+    * { box-sizing:border-box; }
+    html, body { margin:0; padding:0; }
+    body { font-family:var(--font); background:var(--bg); color:var(--text); min-height:100vh; -webkit-font-smoothing:antialiased; line-height:1.5; }
+    .mono { font-family:var(--mono); }
+    .logo { width:1em; height:1em; display:inline-block; vertical-align:-.14em; }
+    [hidden] { display:none !important; }
+    .screen-center { min-height:100vh; display:grid; place-items:center; padding:24px; text-align:center; }
+    .spinner { width:34px; height:34px; border-radius:50%; border:3px solid var(--border); border-top-color:var(--accent); animation:spin .8s linear infinite; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    a { color:inherit; }
+
+    .denied .logo { font-size:64px; }
+    .denied h1 { font-size:28px; margin:10px 0 6px; }
+    .denied p { color:var(--muted); margin:0 0 18px; }
+    .btn-ghost { display:inline-flex; align-items:center; gap:8px; padding:11px 18px; border-radius:12px; border:1px solid var(--border); background:var(--surface); color:var(--text); font-weight:700; text-decoration:none; }
+    .btn-ghost:hover { border-color:var(--accent); }
+
+    header.bar { position:sticky; top:0; z-index:20; background:color-mix(in oklab, var(--bg) 88%, transparent); backdrop-filter:blur(12px); border-bottom:1px solid var(--border); }
+    .bar-in { max-width:var(--maxw); margin:0 auto; padding:13px 22px; display:flex; align-items:center; justify-content:space-between; gap:14px; }
+    .brand { display:flex; align-items:center; gap:10px; font-weight:800; }
+    .brand .logo { font-size:24px; }
+    .brand small { color:var(--faint); font-weight:600; font-size:12px; letter-spacing:.04em; }
+    .bar-right { display:flex; align-items:center; gap:10px; }
+    .who { font-size:13px; color:var(--muted); max-width:220px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .icon-btn { display:inline-grid; place-items:center; width:38px; height:38px; border-radius:11px; background:var(--surface); border:1px solid var(--border); color:var(--text); cursor:pointer; }
+    .icon-btn:hover { border-color:var(--accent); }
+    .icon-btn svg { width:18px; height:18px; }
+    .sun { display:none; } .moon { display:block; }
+    [data-theme="light"] .sun { display:block; } [data-theme="light"] .moon { display:none; }
+
+    main { max-width:var(--maxw); margin:0 auto; padding:22px; }
+    .tabs { display:flex; gap:6px; background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:5px; width:fit-content; margin-bottom:20px; }
+    .tab { border:none; background:none; color:var(--muted); font-family:inherit; font-weight:700; font-size:14px; padding:9px 18px; border-radius:10px; cursor:pointer; transition:all .18s ease; }
+    .tab.active { background:var(--surface-2); color:var(--text); box-shadow:inset 0 0 0 1px var(--border); }
+    .tab:hover:not(.active) { color:var(--text); }
+
+    .panel { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; }
+    .panel-head { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid var(--border); }
+    .panel-head h2 { margin:0; font-size:16px; }
+    .panel-head .count { color:var(--faint); font-size:13px; font-family:var(--mono); }
+    .btn-sm { display:inline-flex; align-items:center; gap:7px; padding:8px 14px; border-radius:10px; border:1px solid var(--border); background:var(--surface-2); color:var(--text); font-weight:700; font-size:13px; cursor:pointer; font-family:inherit; }
+    .btn-sm:hover { border-color:var(--accent); }
+    .btn-sm svg { width:14px; height:14px; }
+
+    .table-wrap { overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; font-size:14px; min-width:760px; }
+    thead th { text-align:left; font-family:var(--mono); font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--faint); font-weight:700; padding:12px 16px; border-bottom:1px solid var(--border); white-space:nowrap; }
+    tbody td { padding:12px 16px; border-bottom:1px solid var(--border); vertical-align:middle; }
+    tbody tr.clickable { cursor:pointer; }
+    tbody tr.clickable:hover { background:var(--surface-2); }
+    .num { font-family:var(--mono); }
+    .av { width:30px; height:30px; border-radius:50%; object-fit:cover; border:1px solid var(--border); background:var(--surface-2); display:inline-grid; place-items:center; font-size:12px; font-weight:700; color:var(--accent-strong); vertical-align:middle; }
+    .pill { display:inline-block; font-family:var(--mono); font-size:11px; font-weight:700; padding:3px 9px; border-radius:999px; }
+    .pill.green { color:#04130d; background:var(--green); }
+    .pill.amber { color:#1a1205; background:var(--amber); }
+    .pill.gray { color:var(--text); background:var(--surface-2); border:1px solid var(--border); }
+    .pct-cell { display:flex; align-items:center; gap:8px; min-width:120px; }
+    .pct-bar { flex:1; height:6px; border-radius:999px; background:var(--surface-2); overflow:hidden; }
+    .pct-bar i { display:block; height:100%; background:linear-gradient(90deg, var(--accent), var(--accent-strong)); }
+    .pct-num { font-family:var(--mono); font-weight:700; color:var(--accent-strong); width:38px; text-align:right; }
+
+    .detail td { background:var(--bg); padding:0; }
+    .detail-inner { padding:16px 20px; }
+    .day-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:8px; }
+    .dchip { display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:10px; background:var(--surface); border:1px solid var(--border); font-size:12.5px; }
+    .dchip .ring2 { flex:none; width:18px; height:18px; border-radius:50%; display:grid; place-items:center; border:2px solid var(--border); }
+    .dchip.done .ring2 { background:var(--accent); border-color:var(--accent); }
+    .dchip.done .ring2 svg { width:10px; height:10px; color:#04130d; }
+    .dchip .ring2 svg { opacity:0; } .dchip.done .ring2 svg { opacity:1; }
+    .dchip .dnum { font-family:var(--mono); font-weight:700; color:var(--faint); }
+    .dchip .dxy { margin-left:auto; font-family:var(--mono); color:var(--muted); font-size:11px; }
+
+    /* Plan manager */
+    .pm-layout { display:grid; grid-template-columns:1.6fr 1fr; gap:0; }
+    @media (max-width:900px){ .pm-layout { grid-template-columns:1fr; } }
+    .pm-form { border-left:1px solid var(--border); padding:18px 20px; }
+    @media (max-width:900px){ .pm-form { border-left:none; border-top:1px solid var(--border); } }
+    .pm-form h3 { margin:0 0 14px; font-size:15px; }
+    .field { margin-bottom:12px; }
+    .field label { display:block; font-size:12px; color:var(--muted); margin-bottom:5px; font-weight:600; }
+    .field input, .field textarea { width:100%; background:var(--bg); border:1px solid var(--border); border-radius:10px; color:var(--text); font-family:inherit; font-size:14px; padding:10px 12px; }
+    .field textarea { min-height:120px; resize:vertical; font-family:var(--mono); font-size:13px; }
+    .field input:focus, .field textarea:focus { outline:none; border-color:var(--accent); }
+    .hint { font-size:11.5px; color:var(--faint); margin-top:5px; }
+    .row2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .btn-primary { display:inline-flex; align-items:center; gap:8px; font-weight:700; font-size:14px; padding:11px 18px; border-radius:11px; border:none; cursor:pointer; color:#04130d; background:linear-gradient(180deg, var(--accent-strong), var(--accent)); }
+    .btn-primary:hover { filter:brightness(1.05); }
+    .btn-del { border:none; background:none; color:#f87171; cursor:pointer; font-weight:700; font-size:13px; font-family:inherit; padding:6px 8px; border-radius:8px; }
+    .btn-del:hover { background:color-mix(in oklab, #f87171 14%, transparent); }
+    .toast { position:fixed; bottom:22px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--accent); color:#04130d; font-weight:700; padding:11px 20px; border-radius:12px; box-shadow:var(--shadow); opacity:0; transition:all .3s ease; z-index:60; font-size:14px; }
+    .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+    .lb-row { display:flex; align-items:center; gap:14px; padding:11px 16px; border-bottom:1px solid var(--border); }
+    .lb-rank { width:30px; text-align:center; font-family:var(--mono); font-weight:700; color:var(--faint); }
+    .lb-rank.medal { font-size:18px; }
+    .lb-name { flex:1; font-weight:600; }
+    .lb-bar { width:200px; height:7px; border-radius:999px; background:var(--surface-2); overflow:hidden; }
+    .lb-bar i { display:block; height:100%; background:linear-gradient(90deg, var(--accent), var(--accent-strong)); }
+    .lb-pct { width:48px; text-align:right; font-family:var(--mono); font-weight:700; color:var(--accent-strong); }
+    .lb-tasks { width:90px; text-align:right; font-family:var(--mono); font-size:12px; color:var(--muted); }
+    .empty-note { color:var(--faint); text-align:center; padding:28px; }
+  </style>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <linearGradient id="flameGrad" x1="0" y1="1" x2="0" y2="0">
+        <stop offset="0" stop-color="#059669" /><stop offset=".55" stop-color="#10b981" /><stop offset="1" stop-color="#6ee7b7" />
+      </linearGradient>
+      <symbol id="flame" viewBox="0 0 32 32">
+        <path d="M16 3 C 15 9 11 11 11 17 C 11 22 13 26 16.5 26 C 20 26 22 22.5 22 18.5 C 22 15 20.5 12.5 19.5 10 C 19.2 12.5 18 13.5 17 13 C 18.2 9.5 17 6 16 3 Z" fill="url(#flameGrad)" />
+        <path d="M16.8 14 C 16 17 14 18.5 14 21 C 14 23.2 15.4 25 17 25 C 18.7 25 20 23.4 20 21.4 C 20 18.8 18 16.8 16.8 14 Z" fill="#d1fae5" opacity=".9" />
+      </symbol>
+    </defs>
+  </svg>
+
+  <div id="loading" class="screen-center"><div class="spinner"></div></div>
+
+  <div id="denied" class="screen-center denied" hidden>
+    <div>
+      <svg class="logo"><use href="#flame" /></svg>
+      <h1>Access Denied</h1>
+      <p>This dashboard is for the teacher account only.</p>
+      <a class="btn-ghost" href="/challenge/">← Back to the Challenge</a>
+    </div>
+  </div>
+
+  <div id="app" hidden>
+    <header class="bar">
+      <div class="bar-in">
+        <div class="brand"><svg class="logo"><use href="#flame" /></svg> Flarestamina <small>Teacher Dashboard</small></div>
+        <div class="bar-right">
+          <span class="who" id="who"></span>
+          <button class="icon-btn" id="themeToggle" aria-label="Toggle theme" title="Toggle theme">
+            <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+            <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+          </button>
+          <button class="icon-btn" id="signOutBtn" aria-label="Sign out" title="Sign out">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <div class="tabs">
+        <button class="tab active" data-tab="students">Students</button>
+        <button class="tab" data-tab="plan">Plan Manager</button>
+        <button class="tab" data-tab="leaderboard">Leaderboard</button>
+      </div>
+
+      <!-- Students -->
+      <section class="panel" id="tab-students">
+        <div class="panel-head">
+          <h2>Students</h2>
+          <button class="btn-sm" id="refreshStudents"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.5 9a9 9 0 0 1 14.9-3.4L23 10M1 14l4.6 4.4A9 9 0 0 0 20.5 15"/></svg> Refresh</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Student</th><th>Email</th><th>Tasks Done</th><th>Progress</th><th>Days Completed</th><th>Last Active</th></tr></thead>
+            <tbody id="studentsBody"><tr><td colspan="6"><p class="empty-note">Loading students…</p></td></tr></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Plan Manager -->
+      <section class="panel" id="tab-plan" hidden>
+        <div class="panel-head"><h2>Plan Manager</h2><span class="count" id="planCount"></span></div>
+        <div class="pm-layout">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Day</th><th>Date</th><th>Topic</th><th>Tasks</th><th></th></tr></thead>
+              <tbody id="planBody"><tr><td colspan="5"><p class="empty-note">Loading plan…</p></td></tr></tbody>
+            </table>
+          </div>
+          <form class="pm-form" id="addForm">
+            <h3>➕ Add / Edit Day</h3>
+            <div class="row2">
+              <div class="field"><label>Day number (idx)</label><input id="f_idx" type="number" min="0" required /></div>
+              <div class="field"><label>Weekday</label><input id="f_weekday" type="text" placeholder="Tue" /></div>
+            </div>
+            <div class="field"><label>Date</label><input id="f_date" type="text" placeholder="14th July" /><div class="hint">Used for the card label; a YYYY-MM-DD is derived when possible.</div></div>
+            <div class="field"><label>Topic</label><input id="f_topic" type="text" placeholder="Tourism" /></div>
+            <div class="field"><label>Tasks — one per line</label><textarea id="f_tasks" placeholder="Listening: Test 20 — Do/redo&#10;Reading: Test 20 — Analyze/vocab&#10;Writing: Task 2 — essay&#10;Speaking: Part 1 — 40, 41"></textarea><div class="hint">Format: <b>Skill: Label</b>. Ids become <span class="mono">{idx}-a, {idx}-b…</span></div></div>
+            <button class="btn-primary" type="submit">Save Day</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Leaderboard -->
+      <section class="panel" id="tab-leaderboard" hidden>
+        <div class="panel-head">
+          <h2>Leaderboard</h2>
+          <button class="btn-sm" id="refreshLb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.5 9a9 9 0 0 1 14.9-3.4L23 10M1 14l4.6 4.4A9 9 0 0 0 20.5 15"/></svg> Refresh</button>
+        </div>
+        <div id="lbBody"><p class="empty-note">Loading…</p></div>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, collection, query, orderBy, onSnapshot, getDocs, doc, setDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyChqnXfBGsqnf-EUqxiCP7WSm2CLeRPfII",
+      authDomain: "flarestamina.firebaseapp.com",
+      projectId: "flarestamina",
+      storageBucket: "flarestamina.firebasestorage.app",
+      messagingSenderId: "753308381926",
+      appId: "1:753308381926:web:a86bf82bee8654aad14127",
+      measurementId: "G-5CK1J3MKLB"
+    };
+    const TEACHER_EMAIL = "Polatovmaqsudjon1@gmail.com";
+    const SKILL_ORDER = ["Listening","Reading","Writing","Speaking","Vocabulary"];
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const $ = (id) => document.getElementById(id);
+    const localDateStr = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+    const initialsOf = (name) => (name||"?").trim().split(/\s+/).map(w=>w[0]).slice(0,2).join("").toUpperCase();
+    const escapeHtml = (s) => String(s==null?"":s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+    const checkSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>';
+
+    // theme + sign out
+    $("themeToggle").addEventListener("click", () => {
+      const next = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
+      document.documentElement.setAttribute("data-theme", next);
+      try { localStorage.setItem("flare-theme", next); } catch (e) {}
+    });
+    $("signOutBtn").addEventListener("click", () => { try { signOut(auth); } catch (e) {} });
+
+    function toast(msg) { const t = $("toast"); t.textContent = msg; t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 2200); }
+
+    // ---- Access control ----
+    let booted = false;
+    onAuthStateChanged(auth, (user) => {
+      $("loading").hidden = true;
+      if (!user) { location.href = "/challenge/"; return; }
+      if (user.email !== TEACHER_EMAIL) { $("app").hidden = true; $("denied").hidden = false; return; }
+      $("denied").hidden = true; $("app").hidden = false;
+      $("who").textContent = user.email;
+      if (!booted) { booted = true; initTabs(); loadStudents(); }
+    });
+
+    // ---- Tabs ----
+    let planSubed = false, lbLoadedOnce = false;
+    function initTabs() {
+      document.querySelectorAll(".tab").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".tab").forEach(b => b.classList.toggle("active", b === btn));
+          const tab = btn.dataset.tab;
+          $("tab-students").hidden = tab !== "students";
+          $("tab-plan").hidden = tab !== "plan";
+          $("tab-leaderboard").hidden = tab !== "leaderboard";
+          if (tab === "plan" && !planSubed) { planSubed = true; subscribePlan(); }
+          if (tab === "leaderboard" && !lbLoadedOnce) { lbLoadedOnce = true; loadLeaderboard(); }
+        });
+      });
+      $("refreshStudents").addEventListener("click", loadStudents);
+      $("refreshLb").addEventListener("click", loadLeaderboard);
+      $("addForm").addEventListener("submit", onAddDay);
+    }
+
+    // ---- Plan helper ----
+    async function fetchPlan() {
+      const snap = await getDocs(query(collection(db,"plan"), orderBy("idx")));
+      return snap.docs.map(d => d.data()).sort((a,b)=>a.idx-b.idx);
+    }
+
+    // ---- Students tab ----
+    async function loadStudents() {
+      $("studentsBody").innerHTML = `<tr><td colspan="6"><p class="empty-note">Loading students…</p></td></tr>`;
+      try {
+        const plan = await fetchPlan();
+        const totalTasks = plan.reduce((s,d)=>s+d.tasks.length, 0);
+        const usersSnap = await getDocs(collection(db,"users"));
+        const students = await Promise.all(usersSnap.docs.map(async ud => {
+          const u = ud.data();
+          let checked = new Set();
+          try { const ps = await getDocs(collection(db,"users",ud.id,"progress")); ps.forEach(p => { if (p.data() && p.data().checked) checked.add(p.id); }); } catch (e) {}
+          let tasksDone = 0, daysDone = 0;
+          const perDay = plan.map(d => {
+            const done = d.tasks.filter(t => checked.has(t.id)).length;
+            const complete = d.tasks.length > 0 && done === d.tasks.length;
+            tasksDone += done; if (complete) daysDone++;
+            return { idx:d.idx, dateLabel:d.dateLabel, weekday:d.weekday, done, total:d.tasks.length, complete };
+          });
+          const percent = totalTasks ? Math.round(tasksDone/totalTasks*100) : 0;
+          return { uid:ud.id, name:u.displayName||"Learner", email:u.email||"—", photoURL:u.photoURL, tasksDone, totalTasks, percent, daysDone, perDay, lastActive:u.lastActive };
+        }));
+        students.sort((a,b) => b.percent - a.percent || b.tasksDone - a.tasksDone);
+        renderStudents(students, totalTasks, plan.length);
+      } catch (e) {
+        console.error(e);
+        $("studentsBody").innerHTML = `<tr><td colspan="6"><p class="empty-note">Couldn't load students.</p></td></tr>`;
+      }
+    }
+
+    function lastActive(ts) {
+      if (!ts || !ts.toDate) return { txt:"—", cls:"gray" };
+      const d = ts.toDate(), now = new Date();
+      const sameDay = localDateStr(d) === localDateStr(now);
+      const diffDays = (now - d) / 86400000;
+      let cls = "gray", txt;
+      if (sameDay) { cls = "green"; txt = "Today"; }
+      else if (diffDays <= 7) { cls = "amber"; txt = Math.max(1, Math.round(diffDays)) + "d ago"; }
+      else { cls = "gray"; txt = d.toLocaleDateString(undefined, { day:"numeric", month:"short" }); }
+      return { txt, cls };
+    }
+
+    function renderStudents(students, totalTasks, dayCount) {
+      if (!students.length) { $("studentsBody").innerHTML = `<tr><td colspan="6"><p class="empty-note">No students have signed in yet.</p></td></tr>`; return; }
+      const rows = students.map((s, i) => {
+        const la = lastActive(s.lastActive);
+        const av = s.photoURL ? `<img class="av" src="${s.photoURL}" alt="" referrerpolicy="no-referrer">` : `<span class="av">${initialsOf(s.name)}</span>`;
+        const detail = `<tr class="detail" id="detail-${i}" hidden><td colspan="6"><div class="detail-inner"><div class="day-grid">` +
+          s.perDay.map(d => `<div class="dchip ${d.complete?'done':''}"><span class="ring2">${checkSvg}</span><span class="dnum">D${d.idx+1}</span><span>${escapeHtml(d.dateLabel)}</span><span class="dxy">${d.done}/${d.total}</span></div>`).join("") +
+          `</div></div></td></tr>`;
+        return `<tr class="clickable" data-detail="detail-${i}">
+          <td><div style="display:flex;align-items:center;gap:10px">${av}<b>${escapeHtml(s.name)}</b></div></td>
+          <td style="color:var(--muted)">${escapeHtml(s.email)}</td>
+          <td class="num">${s.tasksDone} <span style="color:var(--faint)">/ ${totalTasks}</span></td>
+          <td><div class="pct-cell"><div class="pct-bar"><i style="width:${s.percent}%"></i></div><span class="pct-num">${s.percent}%</span></div></td>
+          <td class="num">${s.daysDone} <span style="color:var(--faint)">/ ${dayCount}</span></td>
+          <td><span class="pill ${la.cls}">${la.txt}</span></td>
+        </tr>${detail}`;
+      }).join("");
+      $("studentsBody").innerHTML = rows;
+      $("studentsBody").querySelectorAll("tr.clickable").forEach(tr => {
+        tr.addEventListener("click", () => { const d = $(tr.dataset.detail); if (d) d.hidden = !d.hidden; });
+      });
+    }
+
+    // ---- Plan Manager tab ----
+    let addIdxTouched = false;
+    $("f_idx").addEventListener("input", () => { addIdxTouched = true; });
+
+    function subscribePlan() {
+      onSnapshot(query(collection(db,"plan"), orderBy("idx")), (snap) => {
+        const plan = snap.docs.map(d => ({ id:d.id, ...d.data() })).sort((a,b)=>a.idx-b.idx);
+        $("planCount").textContent = `${plan.length} days`;
+        if (!plan.length) { $("planBody").innerHTML = `<tr><td colspan="5"><p class="empty-note">No plan days yet.</p></td></tr>`; }
+        else {
+          $("planBody").innerHTML = plan.map(d => `<tr>
+            <td class="num"><b>Day ${d.idx+1}</b></td>
+            <td>${escapeHtml(d.dateLabel||"")} <span style="color:var(--faint)">${escapeHtml(d.weekday||"")}</span></td>
+            <td>${escapeHtml(d.topic||"—")}</td>
+            <td class="num">${(d.tasks||[]).length}</td>
+            <td style="text-align:right"><button class="btn-del" data-id="${escapeHtml(d.id)}" data-day="${d.idx+1}">Delete</button></td>
+          </tr>`).join("");
+          $("planBody").querySelectorAll(".btn-del").forEach(b => b.addEventListener("click", async () => {
+            if (!confirm(`Delete Day ${b.dataset.day}? This removes it for every student.`)) return;
+            try { await deleteDoc(doc(db,"plan",b.dataset.id)); toast(`Day ${b.dataset.day} deleted`); } catch (e) { console.error(e); toast("Delete failed"); }
+          }));
+        }
+        const nextIdx = plan.length ? Math.max(...plan.map(d=>d.idx)) + 1 : 0;
+        if (!addIdxTouched) $("f_idx").value = nextIdx;
+      }, (e) => { console.error(e); $("planBody").innerHTML = `<tr><td colspan="5"><p class="empty-note">Couldn't load plan.</p></td></tr>`; });
+    }
+
+    function canonSkill(raw) {
+      const hit = SKILL_ORDER.find(s => s.toLowerCase() === raw.toLowerCase());
+      if (hit) return hit;
+      return raw.charAt(0).toUpperCase() + raw.slice(1);
+    }
+    function deriveRealDate(s) {
+      if (!s) return "";
+      const dm = s.match(/(\d{1,2})/); const day = dm ? Number(dm[1]) : null;
+      const months = ["january","february","march","april","may","june","july","august","september","october","november","december"];
+      const lower = s.toLowerCase(); let mon = -1;
+      months.forEach((nm, idx) => { if (lower.includes(nm.slice(0,3))) mon = idx; });
+      if (day == null || mon < 0) return "";
+      return `2026-${String(mon+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+    }
+
+    async function onAddDay(e) {
+      e.preventDefault();
+      const idx = Number($("f_idx").value);
+      if (Number.isNaN(idx)) { toast("Enter a day number"); return; }
+      const dateLabel = $("f_date").value.trim();
+      const weekday = $("f_weekday").value.trim();
+      const topic = $("f_topic").value.trim();
+      const letters = "abcdefghijklmnopqrstuvwxyz";
+      const tasks = $("f_tasks").value.split("\n").map(l => l.trim()).filter(Boolean).map((line, i) => {
+        const ci = line.indexOf(":");
+        const skill = canonSkill(ci >= 0 ? line.slice(0, ci).trim() : "Task");
+        const label = ci >= 0 ? line.slice(ci+1).trim() : line;
+        return { id: `${idx}-${letters[i] || ("z" + i)}`, skill, label };
+      });
+      const day = { idx, dateLabel, weekday, topic, tasks, active:true };
+      const realDate = deriveRealDate(dateLabel);
+      if (realDate) day.realDate = realDate;
+      try {
+        await setDoc(doc(db,"plan",String(idx)), day);
+        toast(`Day ${idx+1} saved (${tasks.length} tasks)`);
+        $("f_date").value = ""; $("f_weekday").value = ""; $("f_topic").value = ""; $("f_tasks").value = "";
+        addIdxTouched = false;
+      } catch (err) { console.error(err); toast("Save failed"); }
+    }
+
+    // ---- Leaderboard tab ----
+    async function loadLeaderboard() {
+      $("lbBody").innerHTML = `<p class="empty-note">Loading…</p>`;
+      try {
+        const snap = await getDocs(query(collection(db,"leaderboard"), orderBy("percent","desc")));
+        const rows = snap.docs.map(d => ({ uid:d.id, ...d.data() }));
+        if (!rows.length) { $("lbBody").innerHTML = `<p class="empty-note">No leaderboard entries yet.</p>`; return; }
+        const medals = ["🥇","🥈","🥉"];
+        $("lbBody").innerHTML = rows.map((r, i) => {
+          const pct = Math.max(0, Math.min(100, r.percent || 0));
+          const av = r.photoURL ? `<img class="av" src="${r.photoURL}" alt="" referrerpolicy="no-referrer">` : `<span class="av">${initialsOf(r.displayName)}</span>`;
+          return `<div class="lb-row">
+            <span class="lb-rank ${i<3?'medal':''}">${i<3?medals[i]:(i+1)}</span>
+            ${av}
+            <span class="lb-name">${escapeHtml(r.displayName||"Anonymous")}</span>
+            <span class="lb-bar"><i style="width:${pct}%"></i></span>
+            <span class="lb-pct">${pct}%</span>
+            <span class="lb-tasks">${r.tasksDone||0}/${r.totalTasks||0}</span>
+          </div>`;
+        }).join("");
+      } catch (e) { console.error(e); $("lbBody").innerHTML = `<p class="empty-note">Couldn't load leaderboard.</p>`; }
+    }
+  </script>
+</body>
+</html>

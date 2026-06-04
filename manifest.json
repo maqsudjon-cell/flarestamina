@@ -1,0 +1,12 @@
+{
+  "name": "Flarestamina",
+  "short_name": "Flare",
+  "description": "Ignite Your Endurance. Build better habits. Achieve bigger goals.",
+  "start_url": "/challenge/",
+  "display": "standalone",
+  "background_color": "#0a0e0c",
+  "theme_color": "#059669",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
