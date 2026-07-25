@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#000000">
+  <meta name="description" content="A fast, sentence-level IELTS Listening dictation trainer for details that cost marks.">
+  <title>Dictation Lab — Flarestamina</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./packs.js" defer></script>
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to practice</a>
+
+  <header class="site-header">
+    <a class="brand" href="/" aria-label="Flarestamina home">
+      <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      <span>FLARE<span>STAMINA</span></span>
+    </a>
+    <nav class="top-nav" aria-label="Dictation Lab">
+      <button class="nav-button is-active" type="button" data-route="home">LAB</button>
+      <button class="nav-button" type="button" data-route="progress">PROGRESS</button>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="view home-view is-visible" id="homeView" data-view="home" aria-labelledby="labTitle">
+      <div class="eyebrow"><span class="signal-dot"></span> IELTS LISTENING // DAILY DRILL</div>
+      <div class="hero-copy">
+        <h1 id="labTitle">HEAR THE DETAIL.<br><span>KEEP THE MARK.</span></h1>
+        <p>Ten sentences. Instant word-level feedback. Built for the small sounds that decide your Listening score.</p>
+      </div>
+
+      <div class="identity-line" id="identityLine" aria-live="polite">GUEST MODE // SAVED ON THIS DEVICE</div>
+
+      <div class="section-heading">
+        <div>
+          <span>01</span>
+          <h2>CHOOSE A PACK</h2>
+        </div>
+        <p>10 of 20 sentences per session</p>
+      </div>
+      <div class="pack-grid" id="packGrid" role="radiogroup" aria-label="Sentence pack"></div>
+
+      <div class="setup-row">
+        <div>
+          <span class="setup-label">02 // PLAYBACK SPEED</span>
+          <div class="speed-control" id="homeSpeed" role="group" aria-label="Playback speed">
+            <button type="button" data-speed="0.75">0.75×</button>
+            <button type="button" data-speed="1" class="is-selected">1.0×</button>
+            <button type="button" data-speed="1.25">1.25×</button>
+          </div>
+        </div>
+        <button class="primary-button start-button" id="startButton" type="button">
+          START 10-SENTENCE SESSION
+          <span aria-hidden="true">→</span>
+        </button>
+      </div>
+
+      <div class="key-strip" aria-label="Keyboard shortcuts">
+        <span><kbd>TAB</kbd> REPLAY</span>
+        <span><kbd>ENTER</kbd> CHECK</span>
+        <span><kbd>SHIFT</kbd> + <kbd>ENTER</kbd> SKIP</span>
+      </div>
+    </section>
+
+    <section class="view session-view" id="sessionView" data-view="session" aria-labelledby="sessionTitle">
+      <div class="session-topline">
+        <div>
+          <span class="eyebrow compact" id="sessionPack">PACK</span>
+          <h1 id="sessionTitle">SENTENCE <span id="sentenceNumber">01</span><small> / 10</small></h1>
+        </div>
+        <button class="text-button" id="exitSessionButton" type="button">EXIT</button>
+      </div>
+
+      <div class="session-progress" aria-hidden="true"><i id="sessionProgressBar"></i></div>
+
+      <div class="listening-panel">
+        <button class="replay-button" id="replayButton" type="button" aria-describedby="audioStatus">
+          <span class="play-icon" aria-hidden="true"></span>
+          <span>
+            <b>PLAY / REPLAY</b>
+            <small>TAB KEY</small>
+          </span>
+        </button>
+        <div class="audio-meta">
+          <span id="audioStatus" role="status" aria-live="polite">READY</span>
+          <span>REPLAYS <b id="replayCount">0</b></span>
+          <span>SPEED <b id="activeSpeed">1.0×</b></span>
+        </div>
+      </div>
+
+      <form class="answer-form" id="answerForm" autocomplete="off">
+        <label for="answerInput">TYPE EXACTLY WHAT YOU HEARD</label>
+        <div class="input-shell">
+          <input id="answerInput" name="answer" type="text" inputmode="text" enterkeyhint="done" autocapitalize="sentences" spellcheck="false" autocomplete="off" placeholder="Start typing…" aria-describedby="answerHint">
+          <button type="submit" id="checkButton">CHECK <span aria-hidden="true">↵</span></button>
+        </div>
+        <p id="answerHint">Punctuation and capital letters do not affect your score.</p>
+      </form>
+
+      <section class="feedback-panel" id="feedbackPanel" hidden aria-labelledby="feedbackTitle">
+        <div class="feedback-head">
+          <div>
+            <span class="setup-label">WORD DIFF</span>
+            <h2 id="feedbackTitle"><span id="sentenceScore">0</span>% ACCURATE</h2>
+          </div>
+          <div class="tag-list" id="sentenceTags" aria-label="Error tags"></div>
+        </div>
+        <div class="diff-output" id="diffOutput" aria-label="Word comparison"></div>
+        <div class="reference-block">
+          <span>FULL SENTENCE</span>
+          <p id="referenceSentence"></p>
+        </div>
+        <button class="primary-button next-button" id="nextButton" type="button">NEXT SENTENCE <span aria-hidden="true">→</span></button>
+      </section>
+
+      <audio id="speechAudio" preload="none" playsinline></audio>
+    </section>
+
+    <section class="view summary-view" id="summaryView" data-view="summary" aria-labelledby="summaryTitle">
+      <div class="eyebrow"><span class="signal-dot"></span> SESSION COMPLETE</div>
+      <h1 id="summaryTitle">TEN DOWN.<br><span>DETAILS SHARPER.</span></h1>
+      <div class="summary-grid">
+        <article>
+          <span>ACCURACY</span>
+          <strong id="summaryAccuracy">—</strong>
+          <small>correct words</small>
+        </article>
+        <article>
+          <span>AVG REPLAYS</span>
+          <strong id="summaryReplays">—</strong>
+          <small>per sentence</small>
+        </article>
+        <article>
+          <span>WEAKEST TAG</span>
+          <strong class="tag-value" id="summaryWeakest">—</strong>
+          <small>train this next</small>
+        </article>
+      </div>
+      <section class="streak-section" aria-labelledby="streakTitle">
+        <div class="section-heading">
+          <div>
+            <span>07</span>
+            <h2 id="streakTitle">DAY STREAK</h2>
+          </div>
+          <p id="streakLabel">0 day streak</p>
+        </div>
+        <div class="streak-strip" id="streakStrip"></div>
+      </section>
+      <div class="summary-actions">
+        <button class="primary-button" id="practiceAgainButton" type="button">PRACTICE AGAIN <span aria-hidden="true">↗</span></button>
+        <button class="secondary-button" id="viewProgressButton" type="button">VIEW PROGRESS</button>
+      </div>
+      <p class="sync-note" id="syncNote" aria-live="polite"></p>
+    </section>
+
+    <section class="view progress-view" id="progressView" data-view="progress" aria-labelledby="progressTitle">
+      <div class="progress-heading">
+        <div>
+          <div class="eyebrow">LISTENING // HISTORY</div>
+          <h1 id="progressTitle">PROGRESS,<br><span>NOT PERFECTION.</span></h1>
+        </div>
+        <button class="secondary-button" id="progressPracticeButton" type="button">START A SESSION</button>
+      </div>
+
+      <div class="progress-layout">
+        <section class="chart-panel" aria-labelledby="accuracyTrendTitle">
+          <div class="panel-title">
+            <div>
+              <span>LAST 20 SESSIONS</span>
+              <h2 id="accuracyTrendTitle">ACCURACY TREND</h2>
+            </div>
+            <strong id="latestAccuracy">—</strong>
+          </div>
+          <div class="sparkline" id="sparkline" role="img" aria-label="No session accuracy data yet"></div>
+          <div class="chart-scale"><span>0%</span><span>50%</span><span>100%</span></div>
+        </section>
+
+        <section class="errors-panel" aria-labelledby="topErrorsTitle">
+          <div class="panel-title">
+            <div>
+              <span>ALL TIME</span>
+              <h2 id="topErrorsTitle">TOP ERROR TAGS</h2>
+            </div>
+          </div>
+          <ol class="error-ranking" id="errorRanking"></ol>
+        </section>
+      </div>
+
+      <div class="history-line" id="historyLine">NO SESSIONS YET // YOUR FIRST TEN SENTENCES TAKE ABOUT TEN MINUTES</div>
+    </section>
+  </main>
+
+  <noscript>
+    <div class="noscript">Dictation Lab needs JavaScript for audio, checking, and progress.</div>
+  </noscript>
+</body>
+</html>
