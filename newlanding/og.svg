@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <rect width="1200" height="630" fill="#ffffff"/>
+  <path fill="#0a0a0a" transform="translate(92 175) scale(8.8)" d="M16 1.4 L17.85 13.55 L30.6 16 L17.85 18.45 L16 30.6 L14.15 18.45 L1.4 16 L14.15 13.55 Z"/>
+  <text x="430" y="268" fill="#0a0a0a" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="56" font-weight="500" letter-spacing="-1.6">Flarestamina</text>
+  <text x="430" y="328" fill="#5c5c5c" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="28" font-weight="400">Practice like it’s exam day.</text>
+  <text x="430" y="378" fill="#8a8a8a" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="20">Free IELTS Academic · Tashkent</text>
+  <rect x="430" y="404" width="220" height="3" rx="2" fill="url(#ograil)"/>
+  <defs>
+    <linearGradient id="ograil" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#d4d4d4"/>
+      <stop offset="36%" stop-color="#67e8f9"/>
+      <stop offset="68%" stop-color="#818cf8"/>
+      <stop offset="100%" stop-color="#e879f9"/>
+    </linearGradient>
+  </defs>
+</svg>
