@@ -2,7 +2,7 @@
   "name": "Flarestamina",
   "short_name": "Flare",
   "description": "Ignite Your Endurance. Build better habits. Achieve bigger goals.",
-  "start_url": "/challenge/",
+  "start_url": "/flarestamina/challenge/",
   "display": "standalone",
   "background_color": "#0a0e0c",
   "theme_color": "#059669",
